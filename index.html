@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>さんすう れんしゅう</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&display=swap');
+        
+        :root {
+            /* ピンクテーマ (デフォルト) */
+            --bg-grad-1: #ffe1ea;
+            --bg-grad-2: #bce4f5;
+            --bg-main: #bce4f5;
+            --bg-top: #ffe1ea;
+            --text-main: #5c4033;
+            --text-sub: #8c6b5d;
+            --title-color: #ff80ab;
+            --tab-bg: #fffaf0;
+            --tab-active: #ffb3c6;
+            --tab-active-shadow: #e69ab0;
+            --btn-bg: #fffaf0;
+            --btn-shadow: #e6e0d8;
+            --btn-sub: #e0f7fa;
+            --btn-sub-shadow: #b2ebf2;
+            --dialog-bg: #fffaf0;
+            --score-color: #ff4081;
+            --rainbow-op: 1;
+        }
+
+        [data-theme="space"] {
+            /* 宇宙・夜空テーマ */
+            --bg-grad-1: #1a237e;
+            --bg-grad-2: #000000;
+            --bg-main: #000000;
+            --bg-top: #1a237e;
+            --text-main: #ffffff;
+            --text-sub: #b0bec5;
+            --title-color: #ffd54f;
+            --tab-bg: #283593;
+            --tab-active: #ffd54f;
+            --tab-active-shadow: #ffb300;
+            --btn-bg: #3949ab;
+            --btn-shadow: #1a237e;
+            --btn-sub: #5c6bc0;
+            --btn-sub-shadow: #3949ab;
+            --dialog-bg: #283593;
+            --score-color: #ffd54f;
+            --rainbow-op: 0.15;
+        }
+
+        [data-theme="forest"] {
+            /* 森・動物テーマ */
+            --bg-grad-1: #e8f5e9;
+            --bg-grad-2: #aed581;
+            --bg-main: #aed581;
+            --bg-top: #e8f5e9;
+            --text-main: #33691e;
+            --text-sub: #558b2f;
+            --title-color: #f57c00;
+            --tab-bg: #f1f8e9;
+            --tab-active: #ff9800;
+            --tab-active-shadow: #ef6c00;
+            --btn-bg: #f1f8e9;
+            --btn-shadow: #dcedc8;
+            --btn-sub: #dcedc8;
+            --btn-sub-shadow: #c5e1a5;
+            --dialog-bg: #f1f8e9;
+            --score-color: #e65100;
+            --rainbow-op: 0.3;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background-color: var(--bg-top);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Start & Result Screens */
+        #start-screen, #result-screen {
+            background: linear-gradient(180deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 40px;
+        }
+
+        #result-screen {
+            justify-content: center;
+            padding-top: 0;
+        }
+
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            color: var(--text-main);
+            box-shadow: 0 4px 0 var(--btn-shadow);
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .settings-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 var(--btn-shadow);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: var(--title-color);
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Tabs for Start Screen */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 90%;
+            max-width: 340px;
+        }
+
+        .tab-btn {
+            background-color: var(--tab-bg);
+            border: none;
+            border-radius: 16px;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            box-shadow: 0 4px 0 var(--btn-shadow);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .tab-btn.active {
+            background-color: var(--tab-active);
+            color: #fff;
+            box-shadow: 0 4px 0 var(--tab-active-shadow);
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            width: 90%;
+            max-width: 340px;
+            height: 55vh;
+            overflow-y: auto;
+            padding-bottom: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 10px 5px;
+        }
+
+        .level-grid-btn {
+            background-color: var(--btn-bg);
+            border: none;
+            border-radius: 20px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            box-shadow: 0 6px 0 var(--btn-shadow);
+            cursor: pointer;
+            transition: transform 0.1s;
+            padding: 5px;
+        }
+
+        .level-grid-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 var(--btn-shadow);
+        }
+
+        .level-grid-btn.sub {
+            background-color: var(--btn-sub);
+            box-shadow: 0 6px 0 var(--btn-sub-shadow);
+        }
+        .level-grid-btn.sub:active {
+            box-shadow: 0 0px 0 var(--btn-sub-shadow);
+        }
+
+        .btn-num {
+            font-size: 2.2rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .btn-desc {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 8px;
+            text-align: center;
+            line-height: 1.1;
+            font-weight: bold;
+        }
+
+        /* Review Area */
+        .review-area {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+
+        .review-area h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #5c4033;
+        }
+
+        .review-area p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            color: #5c4033;
+        }
+
+        .review-count {
+            font-size: 3.5rem;
+            color: #ff4081;
+            font-weight: bold;
+            display: block;
+            margin: 10px 0;
+            text-shadow: 2px 2px 0 #fff;
+        }
+
+        .review-start-btn {
+            background-color: #99ff99;
+            border: none;
+            border-radius: 20px;
+            padding: 18px 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2e7d32;
+            box-shadow: 0 6px 0 #66cc66;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .review-start-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 #66cc66;
+        }
+
+        .review-start-btn:disabled {
+            background-color: #e0e0e0;
+            color: #9e9e9e;
+            box-shadow: 0 6px 0 #bdbdbd;
+            cursor: not-allowed;
+            transform: translateY(0);
+        }
+
+        /* Game Screen Layout */
+        #game-screen {
+            background-color: var(--bg-main);
+        }
+
+        .top-half {
+            flex: 1;
+            width: 100%;
+            background-color: var(--bg-top);
+            border-bottom: 3px solid rgba(255,255,255,0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 85%;
+            margin: 15px auto 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            z-index: 10;
+        }
+
+        .question-container {
+            font-size: 4.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            z-index: 10;
+        }
+
+        /* Hints */
+        .hint-area {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            align-items: center;
+            margin-top: -10px;
+            margin-bottom: 5px;
+            z-index: 10;
+            min-height: 40px;
+        }
+        .hint-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            max-width: 150px;
+        }
+        .hint-box {
+            background: rgba(255,255,255,0.7);
+            border: 2px solid var(--text-sub);
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            box-shadow: 0 2px 0 var(--btn-shadow);
+        }
+        .hint-item {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .illustration-area {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .rainbow-svg {
+            position: absolute;
+            bottom: -5px;
+            width: 90%;
+            max-width: 400px;
+            height: auto;
+            opacity: var(--rainbow-op);
+            transition: opacity 0.5s;
+        }
+
+        .theme-emoji {
+            font-size: 6rem;
+            position: relative;
+            bottom: 10px;
+            z-index: 5;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2));
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .bottom-half {
+            height: 48%;
+            width: 100%;
+            padding: 20px 15px 30px;
+            z-index: 10;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            height: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Phone layout orders */
+        .numpad[data-layout="phone"] .n-1 { order: 1; }
+        .numpad[data-layout="phone"] .n-2 { order: 2; }
+        .numpad[data-layout="phone"] .n-3 { order: 3; }
+        .numpad[data-layout="phone"] .n-4 { order: 4; }
+        .numpad[data-layout="phone"] .n-5 { order: 5; }
+        .numpad[data-layout="phone"] .n-6 { order: 6; }
+        .numpad[data-layout="phone"] .n-7 { order: 7; }
+        .numpad[data-layout="phone"] .n-8 { order: 8; }
+        .numpad[data-layout="phone"] .n-9 { order: 9; }
+        .numpad[data-layout="phone"] .n-clear { order: 10; }
+        .numpad[data-layout="phone"] .n-0 { order: 11; }
+        .numpad[data-layout="phone"] .n-quit { order: 12; }
+
+        /* Calculator layout orders */
+        .numpad[data-layout="calc"] .n-7 { order: 1; }
+        .numpad[data-layout="calc"] .n-8 { order: 2; }
+        .numpad[data-layout="calc"] .n-9 { order: 3; }
+        .numpad[data-layout="calc"] .n-4 { order: 4; }
+        .numpad[data-layout="calc"] .n-5 { order: 5; }
+        .numpad[data-layout="calc"] .n-6 { order: 6; }
+        .numpad[data-layout="calc"] .n-1 { order: 7; }
+        .numpad[data-layout="calc"] .n-2 { order: 8; }
+        .numpad[data-layout="calc"] .n-3 { order: 9; }
+        .numpad[data-layout="calc"] .n-clear { order: 10; }
+        .numpad[data-layout="calc"] .n-0 { order: 11; }
+        .numpad[data-layout="calc"] .n-quit { order: 12; }
+
+        .num-btn {
+            background-color: var(--btn-bg);
+            border: none;
+            border-radius: 16px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: inherit;
+            color: var(--text-main);
+            box-shadow: 0 6px 0 var(--btn-shadow);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .num-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 var(--btn-shadow);
+        }
+
+        .btn-clear {
+            background-color: var(--tab-active);
+            color: #fff;
+            box-shadow: 0 6px 0 var(--tab-active-shadow);
+            font-size: 1.5rem;
+        }
+        .btn-clear:active {
+            box-shadow: 0 0px 0 var(--tab-active-shadow);
+        }
+
+        .btn-quit {
+            font-size: 1.2rem;
+            background-color: rgba(255,255,255,0.5);
+        }
+
+        /* Result Screen */
+        .score-text {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .score-number {
+            font-size: 6rem;
+            color: var(--score-color);
+            font-weight: bold;
+            text-shadow: 3px 3px 0 rgba(255,255,255,0.5);
+            white-space: nowrap;
+        }
+
+        .btn-restart {
+            margin-top: 50px;
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            border: none;
+            border-radius: 16px;
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 6px 0 var(--btn-shadow);
+            font-family: inherit;
+        }
+        .btn-restart:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 var(--btn-shadow);
+        }
+
+        /* Dialogs */
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            z-index: 200;
+        }
+        .dialog-overlay.active {
+            display: flex;
+        }
+
+        .dialog-box {
+            background: var(--dialog-bg);
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            margin: auto;
+        }
+
+        .dialog-text {
+            font-size: 1.3rem;
+            margin: 15px 0 25px;
+            color: var(--text-main);
+            font-weight: bold;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .dialog-btn {
+            border: none;
+            border-radius: 16px;
+            padding: 12px 0;
+            width: 100px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .dialog-btn-yes {
+            background-color: var(--tab-active);
+            color: #fff;
+            box-shadow: 0 5px 0 var(--tab-active-shadow);
+        }
+        .dialog-btn-yes:active {
+            transform: translateY(5px);
+            box-shadow: 0 0px 0 var(--tab-active-shadow);
+        }
+
+        .dialog-btn-no {
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            box-shadow: 0 5px 0 var(--btn-shadow);
+        }
+        .dialog-btn-no:active {
+            transform: translateY(5px);
+            box-shadow: 0 0px 0 var(--btn-shadow);
+        }
+
+        /* Settings specific */
+        .settings-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .set-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+        }
+        .set-opts {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .set-btn {
+            background-color: var(--btn-bg);
+            border: 2px solid var(--btn-shadow);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            color: var(--text-main);
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            line-height: 1.2;
+            transition: all 0.2s;
+        }
+        .set-btn.selected {
+            background-color: var(--tab-active);
+            color: #fff;
+            border-color: var(--tab-active-shadow);
+            transform: scale(1.05);
+        }
+        .set-btn small {
+            font-size: 0.75rem;
+            font-weight: normal;
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+            color: #d32f2f !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        #effects-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 300;
+            display: none;
+            overflow: hidden;
+        }
+
+        @keyframes sparkleAnim {
+            0% { transform: scale(0) rotate(0deg) translateY(0); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg) translateY(-50px); opacity: 1; }
+            100% { transform: scale(2) rotate(360deg) translateY(50px); opacity: 0; }
+        }
+
+        .sparkle-element {
+            position: absolute;
+            animation: sparkleAnim 0.6s ease-out forwards;
+            font-size: 3rem;
+        }
+    </style>
+</head>
+<body data-theme="pink">
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen active">
+        <button class="settings-btn" onclick="openSettings()">⚙️ 設定</button>
+        <h1>さんすう</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-tab-add" onclick="switchTab('add')">たしざん</button>
+            <button class="tab-btn" id="btn-tab-sub" onclick="switchTab('sub')">ひきざん</button>
+            <button class="tab-btn" id="btn-tab-review" onclick="switchTab('review')">にがて</button>
+        </div>
+
+        <div class="tab-content active" id="tab-add">
+            <div class="level-grid" id="grid-add"></div>
+        </div>
+        
+        <div class="tab-content" id="tab-sub">
+            <div class="level-grid" id="grid-sub"></div>
+        </div>
+
+        <div class="tab-content" id="tab-review">
+            <div class="review-area">
+                <h2>にがてなもんだい</h2>
+                <p>まちがえた もんだいは<br><span class="review-count" id="review-count-display">0</span>もん あるよ！</p>
+                <button class="review-start-btn" id="review-start-btn" onclick="startGame('review', null)">ふくしゅうする！</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <div class="top-half">
+            <div class="top-bar">
+                <span>だい <span id="q-num">1</span> もん</span>
+                <span>せいかい: <span id="score">0</span></span>
+            </div>
+            
+            <div class="question-container" id="question-text"></div>
+            
+            <div class="hint-area" id="hint-area"></div>
+            
+            <div class="illustration-area">
+                <!-- SVG Rainbow -->
+                <svg class="rainbow-svg" viewBox="0 0 200 100" preserveAspectRatio="none">
+                    <path class="rainbow-path" d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="#ffb3ba" stroke-width="12" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/>
+                    <path class="rainbow-path" d="M 22 100 A 78 78 0 0 1 178 100" fill="none" stroke="#ffdfba" stroke-width="12" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/>
+                    <path class="rainbow-path" d="M 34 100 A 66 66 0 0 1 166 100" fill="none" stroke="#ffffba" stroke-width="12" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/>
+                    <path class="rainbow-path" d="M 46 100 A 54 54 0 0 1 154 100" fill="none" stroke="#baffc9" stroke-width="12" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/>
+                    <path class="rainbow-path" d="M 58 100 A 42 42 0 0 1 142 100" fill="none" stroke="#bae1ff" stroke-width="12" pathLength="100" stroke-dasharray="100" stroke-dashoffset="0"/>
+                </svg>
+                
+                <div id="theme-emoji" class="theme-emoji">🦄</div>
+            </div>
+        </div>
+        
+        <div class="bottom-half">
+            <div class="numpad" data-layout="phone">
+                <button class="num-btn n-1" onclick="inputNumber(1)">1</button>
+                <button class="num-btn n-2" onclick="inputNumber(2)">2</button>
+                <button class="num-btn n-3" onclick="inputNumber(3)">3</button>
+                
+                <button class="num-btn n-4" onclick="inputNumber(4)">4</button>
+                <button class="num-btn n-5" onclick="inputNumber(5)">5</button>
+                <button class="num-btn n-6" onclick="inputNumber(6)">6</button>
+                
+                <button class="num-btn n-7" onclick="inputNumber(7)">7</button>
+                <button class="num-btn n-8" onclick="inputNumber(8)">8</button>
+                <button class="num-btn n-9" onclick="inputNumber(9)">9</button>
+                
+                <button class="num-btn btn-clear n-clear" onclick="clearInput()">けす</button>
+                <button class="num-btn n-0" onclick="inputNumber(0)">0</button>
+                <button class="num-btn btn-quit n-quit" onclick="openDialog()">やめる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen">
+        <div class="score-text" id="result-total-text">0もんちゅう</div>
+        <div class="score-number" id="score-display">0<span style="font-size: 3rem;">もん せいかい！</span></div>
+        <button class="btn-restart" onclick="showScreen('start-screen'); updateReviewCount();">もどる</button>
+    </div>
+
+    <!-- Quit Dialog -->
+    <div class="dialog-overlay" id="quit-dialog">
+        <div class="dialog-box">
+            <div class="dialog-text">ほんとうにやめる？</div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn dialog-btn-yes" onclick="quitGame()">はい</button>
+                <button class="dialog-btn dialog-btn-no" onclick="closeDialog()">いいえ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Dialog -->
+    <div class="dialog-overlay" id="settings-dialog" style="align-items: flex-start; overflow-y: auto; padding: 20px 0;">
+        <div class="dialog-box" style="margin: auto; width: 90%; max-width: 400px; padding: 20px;">
+            <h2 style="margin-top:0; color:var(--text-main);">⚙️ 設定</h2>
+            
+            <div class="settings-group">
+                <div class="set-label">全体のプレイ時間</div>
+                <div class="set-opts">
+                    <button class="set-btn" id="s-gtime-60000" onclick="setSetting('gtime', 60000)">1分</button>
+                    <button class="set-btn" id="s-gtime-180000" onclick="setSetting('gtime', 180000)">3分</button>
+                    <button class="set-btn" id="s-gtime-300000" onclick="setSetting('gtime', 300000)">5分</button>
+                    <button class="set-btn" id="s-gtime-0" onclick="setSetting('gtime', 0)">なし</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="set-label">1問の制限時間</div>
+                <div class="set-opts">
+                    <button class="set-btn" id="s-qtime-5000" onclick="setSetting('qtime', 5000)">5秒</button>
+                    <button class="set-btn" id="s-qtime-10000" onclick="setSetting('qtime', 10000)">10秒</button>
+                    <button class="set-btn" id="s-qtime-0" onclick="setSetting('qtime', 0)">なし</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="set-label">ヒント（箱と絵文字）</div>
+                <div class="set-opts">
+                    <button class="set-btn" id="s-hints-on" onclick="setSetting('hints', 'on')">あり</button>
+                    <button class="set-btn" id="s-hints-off" onclick="setSetting('hints', 'off')">なし</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="set-label">テンキーのならび</div>
+                <div class="set-opts">
+                    <button class="set-btn" id="s-layout-phone" onclick="setSetting('layout', 'phone')">スマホ<br><small>(上が123)</small></button>
+                    <button class="set-btn" id="s-layout-calc" onclick="setSetting('layout', 'calc')">でんたく<br><small>(上が789)</small></button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <div class="set-label">きせかえ（テーマ）</div>
+                <div class="set-opts">
+                    <button class="set-btn" id="s-theme-pink" onclick="setSetting('theme', 'pink')">🦄 ピンク</button>
+                    <button class="set-btn" id="s-theme-space" onclick="setSetting('theme', 'space')">🚀 うちゅう</button>
+                    <button class="set-btn" id="s-theme-forest" onclick="setSetting('theme', 'forest')">🐻 もり</button>
+                </div>
+            </div>
+
+            <hr style="border:none; border-top:2px dashed var(--btn-shadow); margin:20px 0;">
+
+            <button class="dialog-btn" style="width:100%; background:#ef5350; color:#fff; box-shadow:0 4px 0 #c62828;" onclick="resetMistakes()">にがてリストを ぜんぶ消す</button>
+            
+            <button class="dialog-btn dialog-btn-no" style="width:100%; margin-top:20px;" onclick="closeSettings()">とじる</button>
+        </div>
+    </div>
+
+    <!-- Effects Layer -->
+    <div id="effects-layer"></div>
+
+    <script>
+        // Settings Initialization
+        let SETTINGS = JSON.parse(localStorage.getItem('math_settings')) || {
+            gtime: 60000,
+            qtime: 5000,
+            hints: 'on',
+            layout: 'phone',
+            theme: 'pink'
+        };
+
+        function setSetting(key, val) {
+            SETTINGS[key] = val;
+            localStorage.setItem('math_settings', JSON.stringify(SETTINGS));
+            applySettings();
+            updateSettingsUI();
+        }
+
+        function applySettings() {
+            document.body.setAttribute('data-theme', SETTINGS.theme);
+            document.querySelector('.numpad').setAttribute('data-layout', SETTINGS.layout);
+            
+            const uni = document.getElementById('theme-emoji');
+            if(SETTINGS.theme === 'pink') uni.innerText = '🦄';
+            if(SETTINGS.theme === 'space') uni.innerText = '🚀';
+            if(SETTINGS.theme === 'forest') uni.innerText = '🐻';
+        }
+
+        function updateSettingsUI() {
+            document.querySelectorAll('.set-btn').forEach(b => b.classList.remove('selected'));
+            for(let key in SETTINGS) {
+                let btn = document.getElementById(`s-${key}-${SETTINGS[key]}`);
+                if(btn) btn.classList.add('selected');
+            }
+        }
+
+        function openSettings() {
+            updateSettingsUI();
+            document.getElementById('settings-dialog').classList.add('active');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-dialog').classList.remove('active');
+        }
+
+        function resetMistakes() {
+            if(confirm("ほんとうに にがてリストを ぜんぶ消しますか？")) {
+                mistakeList = [];
+                localStorage.setItem('math_mistakes', '[]');
+                updateReviewCount();
+                alert("消去しました！");
+            }
+        }
+
+        // Apply initially
+        applySettings();
+
+        // Data Configuration
+        const addRules = {
+            1: { max: 10, label: "たして 10まで" },
+            2: { max: 12, label: "たして 12まで" },
+            3: { max: 15, label: "たして 15まで" },
+            4: { max: 18, label: "たして 18まで" },
+            5: { max: 20, label: "たして 20まで" },
+            6: { max: 24, label: "たして 24まで" },
+            7: { max: 28, label: "たして 28まで" },
+            8: { max: 32, label: "たして 32まで" },
+            9: { max: 32, label: "まとめ" }
+        };
+
+        const subRules = {
+            1: { type: 'fixed_b', val: 1, label: "ひく 1" },
+            2: { type: 'fixed_b', val: 2, label: "ひく 2" },
+            3: { type: 'fixed_b', val: 3, label: "ひく 3" },
+            4: { type: 'max_b', val: 3, label: "ひく 3まで" },
+            5: { type: 'max_b', val: 5, label: "ひく 5まで" },
+            6: { type: 'max_a', val: 10, label: "10までから" },
+            7: { type: 'max_a', val: 11, label: "11までから" },
+            8: { type: 'max_a', val: 12, label: "12までから" },
+            9: { type: 'max_a', val: 14, label: "14までから" },
+            10: { type: 'max_a', val: 16, label: "16までから" },
+            11: { type: 'max_a', val: 20, label: "20までから" },
+            12: { type: 'max_a', val: 20, label: "まとめ" }
+        };
+
+        // State
+        let currentLevel = null;
+        let totalAttempted = 0;
+        let totalCorrect = 0;
+        let hasMistakeInCurrentQuestion = false;
+        
+        let questionCount = 1;
+        let correctAnswer = 0;
+        let currentInput = "";
+        let expectedDigits = 1;
+        let questionActive = false;
+        let currentQuestionData = null;
+        
+        let timerStart = 0;
+        let timerId = null;
+        let gameTimerId = null;
+        let globalTimerStart = 0;
+        let pausedGlobalTimeRemaining = 0;
+        let globalTimerAnimId = null;
+
+        let pausedTimeRemaining = 0;
+        let isPaused = false;
+
+        let mistakeList = JSON.parse(localStorage.getItem('math_mistakes') || '[]');
+
+        function saveMistake(qData) {
+            const exists = mistakeList.find(m => m.type === qData.type && m.num1 === qData.num1 && m.num2 === qData.num2);
+            if (!exists) {
+                mistakeList.push(qData);
+                localStorage.setItem('math_mistakes', JSON.stringify(mistakeList));
+            }
+        }
+
+        function removeMistake(qData) {
+            mistakeList = mistakeList.filter(m => !(m.type === qData.type && m.num1 === qData.num1 && m.num2 === qData.num2));
+            localStorage.setItem('math_mistakes', JSON.stringify(mistakeList));
+        }
+
+        function updateReviewCount() {
+            const count = mistakeList.length;
+            const displayEl = document.getElementById('review-count-display');
+            if(displayEl) displayEl.innerText = count;
+            const btnEl = document.getElementById('review-start-btn');
+            if(btnEl) btnEl.disabled = (count === 0);
+        }
+
+        const screens = {
+            'start-screen': document.getElementById('start-screen'),
+            'game-screen': document.getElementById('game-screen'),
+            'result-screen': document.getElementById('result-screen')
+        };
+        const questionText = document.getElementById('question-text');
+        const hintArea = document.getElementById('hint-area');
+        const rainbowPaths = document.querySelectorAll('.rainbow-path');
+        const effectsLayer = document.getElementById('effects-layer');
+        const quitDialog = document.getElementById('quit-dialog');
+
+        function initLevels() {
+            const gridAdd = document.getElementById('grid-add');
+            const gridSub = document.getElementById('grid-sub');
+            
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'level-grid-btn';
+                btn.innerHTML = `<span class="btn-num">${i}</span><span class="btn-desc">${addRules[i].label}</span>`;
+                btn.onclick = () => startGame('add', i);
+                gridAdd.appendChild(btn);
+            }
+
+            for (let i = 1; i <= 12; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'level-grid-btn sub';
+                btn.innerHTML = `<span class="btn-num">${i}</span><span class="btn-desc">${subRules[i].label}</span>`;
+                btn.onclick = () => startGame('sub', i);
+                gridSub.appendChild(btn);
+            }
+
+            updateReviewCount();
+        }
+
+        initLevels();
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.getElementById('btn-tab-' + tabId).classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            if(tabId === 'review') {
+                updateReviewCount();
+            }
+        }
+
+        function showScreen(screenId) {
+            for (let id in screens) {
+                screens[id].classList.remove('active');
+            }
+            screens[screenId].classList.add('active');
+        }
+
+        function startGame(type, level) {
+            currentLevel = { type, level };
+            totalAttempted = 0;
+            totalCorrect = 0;
+            questionCount = 1;
+            document.getElementById('score').innerText = totalCorrect;
+            
+            showScreen('game-screen');
+            
+            // Start Global Timer
+            rainbowPaths.forEach(path => path.style.strokeDashoffset = 0);
+            if (SETTINGS.gtime > 0) {
+                globalTimerStart = Date.now();
+                updateGlobalTimer();
+                gameTimerId = setTimeout(endGame, SETTINGS.gtime);
+            }
+            
+            nextQuestion();
+        }
+
+        function endGame() {
+            clearTimeout(gameTimerId);
+            cancelAnimationFrame(timerId);
+            cancelAnimationFrame(globalTimerAnimId);
+            
+            document.getElementById('result-total-text').innerText = `${totalAttempted}もんちゅう`;
+            document.getElementById('score-display').innerHTML = `${totalCorrect}<span style="font-size: 3rem;">もん せいかい！</span>`;
+            
+            showScreen('result-screen');
+            updateReviewCount();
+        }
+
+        function updateGlobalTimer() {
+            if (isPaused || SETTINGS.gtime === 0) return;
+            let elapsed = Date.now() - globalTimerStart;
+            let progress = elapsed / SETTINGS.gtime;
+            if (progress > 1) progress = 1;
+            
+            rainbowPaths.forEach(path => {
+                path.style.strokeDashoffset = progress * 100;
+            });
+            
+            if (progress < 1) {
+                globalTimerAnimId = requestAnimationFrame(updateGlobalTimer);
+            }
+        }
+
+        function renderHints(num1, num2, type) {
+            if (SETTINGS.hints === 'off') {
+                hintArea.innerHTML = '';
+                return;
+            }
+
+            let itemEmoji = '🍎';
+            if (SETTINGS.theme === 'space') itemEmoji = '⭐';
+            if (SETTINGS.theme === 'forest') itemEmoji = '🌰';
+
+            function makeGroup(count) {
+                let html = '';
+                let boxes = Math.floor(count / 10);
+                let rem = count % 10;
+                for(let i=0; i<boxes; i++) html += `<div class="hint-box">10</div>`;
+                for(let i=0; i<rem; i++) html += `<div class="hint-item">${itemEmoji}</div>`;
+                return `<div class="hint-group">${html}</div>`;
+            }
+
+            if (type === 'add') {
+                hintArea.innerHTML = makeGroup(num1) + `<div style="font-weight:bold; font-size:1.5rem; color:var(--text-sub);">＋</div>` + makeGroup(num2);
+            } else {
+                hintArea.innerHTML = makeGroup(num1) + `<div style="font-size:1rem; font-weight:bold; color:var(--text-sub); margin-left:10px;">から ${num2}コ ひく</div>`;
+            }
+        }
+
+        function generateQuestion() {
+            let num1, num2, type;
+
+            if (currentLevel.type === 'review') {
+                if (mistakeList.length === 0) {
+                    type = 'add'; num1 = 1; num2 = 1;
+                } else {
+                    const q = mistakeList[Math.floor(Math.random() * mistakeList.length)];
+                    type = q.type; num1 = q.num1; num2 = q.num2;
+                }
+            } else {
+                type = currentLevel.type;
+                if (type === 'add') {
+                    const rule = addRules[currentLevel.level];
+                    let sum = Math.floor(Math.random() * (rule.max - 1)) + 2;
+                    num1 = Math.floor(Math.random() * (sum - 1)) + 1;
+                    num2 = sum - num1;
+                } else {
+                    const rule = subRules[currentLevel.level];
+                    if (rule.type === 'fixed_b') {
+                        num2 = rule.val;
+                        num1 = num2 + Math.floor(Math.random() * 9) + 1;
+                    } else if (rule.type === 'max_b') {
+                        num2 = Math.floor(Math.random() * rule.val) + 1;
+                        num1 = num2 + Math.floor(Math.random() * 9) + 1;
+                    } else if (rule.type === 'max_a') {
+                        num1 = Math.floor(Math.random() * (rule.val - 1)) + 2;
+                        num2 = Math.floor(Math.random() * (num1 - 1)) + 1;
+                    }
+                }
+            }
+
+            currentQuestionData = { type, num1, num2 };
+            renderHints(num1, num2, type);
+
+            if (type === 'add') {
+                correctAnswer = num1 + num2;
+                return `${num1} ＋ ${num2} ＝ `;
+            } else {
+                correctAnswer = num1 - num2;
+                return `${num1} － ${num2} ＝ `;
+            }
+        }
+
+        function nextQuestion() {
+            if (currentLevel.type === 'review' && mistakeList.length === 0) {
+                alert("にがてなもんだいを ぜんぶクリアしました！すごい！");
+                endGame();
+                return;
+            }
+
+            isPaused = false;
+            currentInput = "";
+            questionActive = true;
+            hasMistakeInCurrentQuestion = false;
+            
+            document.getElementById('q-num').innerText = questionCount;
+            document.getElementById('score').innerText = totalCorrect;
+            
+            questionText.innerText = generateQuestion();
+            expectedDigits = correctAnswer.toString().length;
+
+            timerStart = Date.now();
+            updateTimer();
+        }
+
+        function updateTimer() {
+            if (!questionActive || isPaused || SETTINGS.qtime === 0) return;
+
+            let now = Date.now();
+            let elapsed = now - timerStart;
+
+            if (elapsed >= SETTINGS.qtime) {
+                handleTimeUp();
+            } else {
+                timerId = requestAnimationFrame(updateTimer);
+            }
+        }
+
+        function handleTimeUp() {
+            questionActive = false;
+            hasMistakeInCurrentQuestion = true;
+            
+            if (currentQuestionData) {
+                saveMistake(currentQuestionData);
+            }
+
+            totalAttempted++;
+
+            questionText.classList.add('shake');
+            setTimeout(() => {
+                questionText.classList.remove('shake');
+                questionCount++;
+                nextQuestion();
+            }, 500);
+        }
+
+        function inputNumber(n) {
+            if (!questionActive || isPaused) return;
+
+            currentInput += n;
+            let qParts = questionText.innerText.split('＝');
+            questionText.innerText = qParts[0] + '＝ ' + currentInput;
+
+            if (currentInput.length === expectedDigits) {
+                checkAnswer();
+            }
+        }
+
+        function clearInput() {
+            if (!questionActive || isPaused) return;
+            currentInput = "";
+            let qParts = questionText.innerText.split('＝');
+            questionText.innerText = qParts[0] + '＝ ';
+        }
+
+        function checkAnswer() {
+            questionActive = false;
+            cancelAnimationFrame(timerId);
+
+            if (parseInt(currentInput) === correctAnswer) {
+                if (!hasMistakeInCurrentQuestion) {
+                    totalCorrect++;
+                }
+                totalAttempted++;
+                
+                removeMistake(currentQuestionData);
+
+                showSparkles();
+                setTimeout(() => {
+                    questionCount++;
+                    nextQuestion();
+                }, 600);
+            } else {
+                hasMistakeInCurrentQuestion = true;
+                saveMistake(currentQuestionData);
+                totalAttempted++;
+
+                questionText.classList.add('shake');
+                setTimeout(() => {
+                    questionText.classList.remove('shake');
+                    questionCount++;
+                    nextQuestion();
+                }, 500);
+            }
+        }
+
+        function showSparkles() {
+            effectsLayer.style.display = 'block';
+            effectsLayer.innerHTML = '';
+            
+            let emojiList = ['✨', '🌟', '💖', '🎉'];
+            if(SETTINGS.theme === 'space') emojiList = ['⭐', '🌠', '🚀', '🌌'];
+            if(SETTINGS.theme === 'forest') emojiList = ['🌿', '🍄', '🐿️', '🐻'];
+
+            for(let i = 0; i < 15; i++) {
+                let el = document.createElement('div');
+                el.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
+                el.className = 'sparkle-element';
+                el.style.left = (Math.random() * 80 + 10) + '%';
+                el.style.top = (Math.random() * 50 + 10) + '%';
+                effectsLayer.appendChild(el);
+            }
+
+            setTimeout(() => {
+                effectsLayer.style.display = 'none';
+            }, 600);
+        }
+
+        function openDialog() {
+            if (!questionActive) return;
+            isPaused = true;
+            if (SETTINGS.qtime > 0) {
+                pausedTimeRemaining = SETTINGS.qtime - (Date.now() - timerStart);
+                cancelAnimationFrame(timerId);
+            }
+            
+            if (SETTINGS.gtime > 0) {
+                clearTimeout(gameTimerId);
+                pausedGlobalTimeRemaining = SETTINGS.gtime - (Date.now() - globalTimerStart);
+                cancelAnimationFrame(globalTimerAnimId);
+            }
+
+            quitDialog.classList.add('active');
+        }
+
+        function closeDialog() {
+            quitDialog.classList.remove('active');
+            isPaused = false;
+            
+            if (SETTINGS.qtime > 0) {
+                timerStart = Date.now() - (SETTINGS.qtime - pausedTimeRemaining);
+                updateTimer();
+            }
+            
+            if (SETTINGS.gtime > 0) {
+                globalTimerStart = Date.now() - (SETTINGS.gtime - pausedGlobalTimeRemaining);
+                gameTimerId = setTimeout(endGame, pausedGlobalTimeRemaining);
+                updateGlobalTimer();
+            }
+        }
+
+        function quitGame() {
+            quitDialog.classList.remove('active');
+            endGame();
+        }
+
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dblclick', event => {
+            event.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>
