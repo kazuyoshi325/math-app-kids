@@ -1296,6 +1296,10 @@
         document.addEventListener('dblclick', event => {
             event.preventDefault();
         }, { passive: false });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
     </script>
 </body>
 </html>
