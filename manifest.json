@@ -1,0 +1,15 @@
+{
+  "name": "さんすう",
+  "short_name": "さんすう",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffe1ea",
+  "theme_color": "#ffb3c6",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
