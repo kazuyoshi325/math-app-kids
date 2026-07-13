@@ -1,13 +1,13 @@
 {
-  "name": "さんすう",
-  "short_name": "さんすう",
+  "name": "さんすう育成ゲーム",
+  "short_name": "さんすう育成",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffe1ea",
   "theme_color": "#ffb3c6",
   "icons": [
     {
-      "src": "icon_v4.png",
+      "src": "icon_v3.png",
       "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"
