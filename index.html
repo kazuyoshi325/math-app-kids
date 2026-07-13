@@ -6,8 +6,8 @@
     <title>さんすう育成ゲーム</title>
     
     <!-- ホーム画面用のアイコンと設定 -->
-    <link rel="apple-touch-icon" href="icon_v4.png">
-    <link rel="icon" type="image/png" href="icon_v4.png">
+    <link rel="apple-touch-icon" href="icon_v3.png">
+    <link rel="icon" type="image/png" href="icon_v3.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="さんすう育成ゲーム">
@@ -147,11 +147,12 @@
         }
 
         h1 {
-            font-size: 3.5rem;
+            font-size: clamp(1.8rem, 8.5vw, 3.5rem);
             color: var(--title-color);
             text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
             margin-bottom: 20px;
             text-align: center;
+            white-space: nowrap;
         }
 
         /* Tabs for Start Screen */
