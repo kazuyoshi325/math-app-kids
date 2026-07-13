@@ -6,7 +6,8 @@ self.addEventListener('install', (e) => {
       './',
       './index.html',
       './icon_v4.png',
-      './manifest.json'
+      './manifest.json',
+      './confetti.js'
     ]))
   );
   self.skipWaiting();
