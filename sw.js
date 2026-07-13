@@ -1,11 +1,11 @@
-const CACHE_NAME = 'math-app-store-v3';
+const CACHE_NAME = 'math-app-store-v4';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll([
       './',
       './index.html',
-      './icon_v3.png',
+      './icon_v4.png',
       './manifest.json'
     ]))
   );
