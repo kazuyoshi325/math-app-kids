@@ -1,4 +1,4 @@
-const CACHE_NAME = 'math-app-store-v6';
+const CACHE_NAME = 'math-app-store-v7';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
